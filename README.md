@@ -1,2 +1,2 @@
 # Conway's Game of Life
-game of life implementation in python just for practice
+Game of Life implementation in Python just for practice that runs on the terminal.
