@@ -251,6 +251,7 @@ class Board:
 
     def copy(self):
         values = self._values.copy()
+        return values
 
     def update(self):
         # updates the board every x millisecond
