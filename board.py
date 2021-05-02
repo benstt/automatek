@@ -3,25 +3,64 @@ import time
 import os
 
 # constants
-ALIVE_CELL = 1
 DEAD_CELL = 0
+ALIVE_CELL = 1
+SPAWNING_PROBABILITY = 0.85
+TIME_BETWEEN_FRAMES = 0.02
 
+# TODO: add error checking
 class Board:
+    """
+    Matrix that holds integer values interpreted as cells.
+
+    Attributes
+    ----------
+    values: List
+        A list of ints.
+
+    width:
+        Number of columns.
+
+    height:
+        Number of rows.
+
+    len:
+        Total number of values.
+    """
+    # attributes
     __slots__ = ['_values', '_width', '_height', '_len']
 
-    def __init__(self, width = 0, height = 0, random = True):
+    def __init__(self, width = 0, height = 0, random = True, source = ''):
         self._values = []
         self._len = 0
-        self._width = width
-        self._height = height
-        if width > 0 and height > 0:
-            if not random:
-                self.fill_values(0)
-            else:
-                self.fill_values_randomly()
+        if source != '':
+            # load information from file
+            file = self.load_from_file(source)
+            self._width = len(file[0])
+            self._height = len(file)
+            self.fill_values_from_file(file)
+        else:
+            # create a board filled with values
+            self._width = width
+            self._height = height
+            if width > 0 and height > 0:
+                if random:
+                    self.fill_values_randomly()
+                else:
+                    self.fill_values(0)
 
     def fill_values(self, value = 0):
-        """ fills the board with the value given """
+        """ 
+        Fills a board with the value given.
+
+        Parameters
+        ----------
+        value : int, default: 0
+
+        Returns
+        -------
+        values: List
+        """
         if self.is_empty():
             # add rows and fill them with values
             for row in range(self._height):
@@ -43,14 +82,20 @@ class Board:
         return self._values
 
     def fill_values_randomly(self):
-        """ fills the board randomly with either a 0 or a 1 """
+        """ 
+        Fills a board with either a 0 or a 1.
+        
+        Returns
+        -------
+        values: List
+        """
         for row in range(self._height):
             # add a new row
             self.append([])
             for column in range(self._width):
                 # assign random values to every number and append that to the row
                 rand_number = random()
-                rand_number = 1 if rand_number >= 0.85 else 0
+                rand_number = 1 if rand_number >= SPAWNING_PROBABILITY else 0
                 self._values[row].append(rand_number)
                 self._len += 1
 
@@ -59,12 +104,64 @@ class Board:
 
         return self._values
 
+    def fill_values_from_file(self, file):
+        """ 
+        Fills a board with the information given by a file.
+        
+        Parameters
+        ----------
+        file: string
+
+        Returns
+        -------
+        values: List
+        """
+        for row in range(self._height):
+            self.append([])
+            for column in range(self._width):
+                self._values[row].append(int(file[row][column])) # cast the value as an int
+                self._len += 1
+
+        # make sure the board was filled
+        assert not self.is_empty(), 'No elements were added'
+
+        return self._values
+
+    def load_from_file(self, file):
+        """ 
+        Loads a file.
+
+        Parameters
+        ----------
+        file: string
+
+        Returns
+        -------
+        f: File
+        """
+        f = open(file, 'r').read().split()
+        return f
+
     def change_pos_value(self, row, column, value):
-        """ changes the value of the given cell with another value """
+        """ 
+        Changes the value of the given cell with another value.
+        
+        Parameters
+        ----------
+        row: int
+        column: int
+        value: int
+        """
         self._values[row][column] = value
 
     def next_board_state(self):
-        """ calculates and returns a new board with updated values """
+        """ 
+        Calculates and returns a new board with updated values. 
+
+        Returns
+        -------
+        new_board: Board
+        """
         if not self.is_empty():
             new_board = Board(self._width, self._height)
             for row in range(self._height):
@@ -73,6 +170,7 @@ class Board:
                     cell = self._values[row][column]
                     # count its neighbors
                     neighbors = self.count_neighbors(row, column)
+                    # check whether the cell is alive or not and update it
                     if cell == ALIVE_CELL:
                         if neighbors == 0 or neighbors == 1:
                             cell = DEAD_CELL
@@ -84,12 +182,24 @@ class Board:
                         if neighbors == 3:
                             cell = ALIVE_CELL
 
+                    # update pos of the new board
                     new_board.change_pos_value(row, column, cell)
 
         return new_board
 
     def count_neighbors(self, row, column):
-        """ returns the amount of neighbors of a given cell """
+        """
+        Counts the amount of neighbors of a given cell
+
+        Parameters
+        ----------
+        row: int
+        column: int
+
+        Returns
+        -------
+        values: int
+        """
         # variable we'll be adding to
         values = 0
 
@@ -212,7 +322,10 @@ class Board:
         return values
     
     def render(self):
-        """ renders the board to the terminal """
+        """ 
+        Renders a board to the terminal and adds borders.
+        Prints every 1 as a symbol and every 0 as a blank space.
+        """
         # make sure there are elements in the board
         assert not self.is_empty(), 'No elements'
 
@@ -224,10 +337,11 @@ class Board:
                     print('|', end = '')
 
                 # print a symbol if a cell is alive
-                print(u"\u2588" if self._values[row][column] == 1 else ' ', end = '')
+                print(u"\u2588" if self._values[row][column] == ALIVE_CELL else ' ', end = '')
 
                 if column == self._width - 1: # right corners
                     print('|', end = '')
+            # jump row
             print('\n', end = '')
 
         print('-' * (self._width + 2)) # bottom corners
@@ -254,12 +368,14 @@ class Board:
         return values
 
     def update(self):
-        # updates the board every x millisecond
+        """
+        Updates a board every given number of seconds.
+        """
         while True:
             self.render()
-            self = self.next_board_state()
-            time.sleep(0.06)
-            os.system('cls')
+            self = self.next_board_state() # update board state
+            time.sleep(TIME_BETWEEN_FRAMES) # wait a bit to better visualize results
+            os.system('cls') # clear the screen before rendering again
 
     def __len__(self):
         return self._len

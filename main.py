@@ -1,4 +1,4 @@
 from board import Board
 
-b = Board(100, 45)
-b.update()
+c = Board(source = 'gosper_glider_gun.txt')
+c.update()
