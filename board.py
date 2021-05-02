@@ -1,4 +1,6 @@
 from random import *
+import time
+import os
 
 ALIVE_CELL = 1
 DEAD_CELL = 0
@@ -48,7 +50,7 @@ class Board:
             for column in range(self._width):
                 # assign random values to every number and append that to the row
                 rand_number = random()
-                rand_number = 1 if rand_number >= 0.7 else 0
+                rand_number = 1 if rand_number >= 0.85 else 0
                 self._values[row].append(rand_number)
                 self._len += 1
 
@@ -212,7 +214,7 @@ class Board:
                     print('|', end = '')
 
                 # print a hash symbol if a cell is alive
-                print('#' if self._values[row][column] == 1 else ' ', end = '')
+                print(u"\u2588" if self._values[row][column] == 1 else ' ', end = '')
 
                 if column == self._width - 1: # right corners
                     print('|', end = '')
@@ -239,9 +241,12 @@ class Board:
         values = self._values.copy()
 
     def update(self):
-        temp = Board(self._width, self._height, False)
-        self.render()
-        temp.render()
+        #self.render()
+        while True:
+            self.render()
+            self = self.next_board_state()
+            time.sleep(0.06)
+            os.system('cls')
 
     def __len__(self):
         return self._len
