@@ -2,6 +2,7 @@ from random import *
 import time
 import os
 
+# constants
 ALIVE_CELL = 1
 DEAD_CELL = 0
 
@@ -19,12 +20,10 @@ class Board:
             else:
                 self.fill_values_randomly()
 
-    def append(self, value):
-        self._values.append(value)
-
     def fill_values(self, value = 0):
         """ fills the board with the value given """
         if self.is_empty():
+            # add rows and fill them with values
             for row in range(self._height):
                 # add a new row
                 self.append([])
@@ -33,6 +32,7 @@ class Board:
                     self._values[row].append(value)
                     self._len += 1
         else:
+            # change each value with the given
             for row in range(self._height):
                 for column in range(self._width):
                     self._values[row][column] = value
@@ -60,7 +60,8 @@ class Board:
         return self._values
 
     def change_pos_value(self, row, column, value):
-        self._values[row - 1][column - 1] = value
+        """ changes the value of the given cell with another value """
+        self._values[row][column] = value
 
     def next_board_state(self):
         """ calculates and returns a new board with updated values """
@@ -83,19 +84,26 @@ class Board:
                         if neighbors == 3:
                             cell = ALIVE_CELL
 
-                    new_board.change_pos_value(row + 1, column + 1, cell)
+                    new_board.change_pos_value(row, column, cell)
 
         return new_board
 
     def count_neighbors(self, row, column):
+        """ returns the amount of neighbors of a given cell """
+        # variable we'll be adding to
         values = 0
 
+        # check for rows
         first_row = row == 0
         in_between_rows = row > 0 and row < self._height - 1
         last_row = row == self._height - 1
-        in_between_columns = column > 0 and column < self._width - 1
 
-        if column == 0:
+        # check for columns
+        first_column = column == 0
+        in_between_columns = column > 0 and column < self._width - 1
+        last_column = column == self._width - 1
+
+        if first_column:
             # first element of each row
             if first_row:
                 # calculate 3 corners
@@ -151,7 +159,7 @@ class Board:
                 if self._values[row][column + 1] == 1:      # right
                     values += 1
 
-        if column == self._width - 1:
+        if last_column:
             # last element of each row
             if first_row:
                 # calculate 3 corners
@@ -183,6 +191,7 @@ class Board:
                     values += 1
         
         if in_between_rows and in_between_columns:
+            # calculate all 8 corners
             if self._values[row][column - 1] == 1:           # left
                 values += 1
             if self._values[row][column + 1] == 1:           # right
@@ -204,6 +213,7 @@ class Board:
     
     def render(self):
         """ renders the board to the terminal """
+        # make sure there are elements in the board
         assert not self.is_empty(), 'No elements'
 
         print('-' * (self._width + 2)) # top corners
@@ -213,7 +223,7 @@ class Board:
                 if column == 0: # left corners
                     print('|', end = '')
 
-                # print a hash symbol if a cell is alive
+                # print a symbol if a cell is alive
                 print(u"\u2588" if self._values[row][column] == 1 else ' ', end = '')
 
                 if column == self._width - 1: # right corners
@@ -221,6 +231,9 @@ class Board:
             print('\n', end = '')
 
         print('-' * (self._width + 2)) # bottom corners
+
+    def append(self, value):
+        self._values.append(value)
 
     @property
     def width(self):
@@ -231,7 +244,6 @@ class Board:
         return self._height
 
     def is_empty(self):
-        #return self._width == 0 or self._height == 0
         return self._len == 0
 
     def clear(self):
@@ -241,7 +253,7 @@ class Board:
         values = self._values.copy()
 
     def update(self):
-        #self.render()
+        # updates the board every x millisecond
         while True:
             self.render()
             self = self.next_board_state()
