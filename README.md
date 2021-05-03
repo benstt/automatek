@@ -8,11 +8,11 @@ The script either loads a .txt file from a directory or generates an entire rand
 
 In `main.py`, change the `source` parameter with the file you'd want to use:
 ```python
-board_from_file: Board(source = '..\pattern.txt')
+board_from_file = Board(source = '..\pattern.txt')
 ```
 or make it entirely random:
 ```python
-random_board: Board(15, 20)
+random_board = Board(15, 20)
 ```
 
 Keep in mind that it has to be kind of a _binary_ matrix, just as in the ones in the samples folder.
