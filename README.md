@@ -15,4 +15,4 @@ or make it entirely random:
 random_board = Board(15, 20)
 ```
 
-Keep in mind that it has to be kind of a _binary_ matrix, just as in the ones in the samples folder.
+Keep in mind that the .txt file has to be kind of a _binary_ matrix, just as in the ones in the samples folder.
