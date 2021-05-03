@@ -6,9 +6,13 @@ The project is entirely for learning purposes and it is based on [Robert Heaton'
 ## Use
 The script either loads a .txt file from a directory or generates an entire random board to have fun with.
 
-In `main.py`, change the `source` parameter with the file you'd want to use: <br />
-`board_from_file: Board(source = '..\pattern.txt')`
-or make it entirely random: <br />
-`random_board: Board(15, 20)`
+In `main.py`, change the `source` parameter with the file you'd want to use:
+```python
+board_from_file: Board(source = '..\pattern.txt')
+```
+or make it entirely random:
+```python
+random_board: Board(15, 20)
+```
 
 Keep in mind that it has to be kind of a _binary_ matrix, just as in the ones in the samples folder.
