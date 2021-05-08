@@ -15,16 +15,16 @@ class Board:
 
     Attributes
     ----------
-    values: List
+    values : List
         A list of ints.
 
-    width:
+    width : int
         Number of columns.
 
-    height:
+    height : int
         Number of rows.
 
-    len:
+    len : int
         Total number of values.
     """
     # attributes
@@ -50,7 +50,7 @@ class Board:
                     self.fill_values(0)
 
     def fill_values(self, value = 0):
-        """ 
+        """
         Fills a board with the value given.
 
         Parameters
@@ -59,7 +59,7 @@ class Board:
 
         Returns
         -------
-        values: List
+        values : List
         """
         if self.is_empty():
             # add rows and fill them with values
@@ -82,12 +82,12 @@ class Board:
         return self._values
 
     def fill_values_randomly(self):
-        """ 
+        """
         Fills a board with either a 0 or a 1.
-        
+
         Returns
         -------
-        values: List
+        values : List
         """
         for row in range(self._height):
             # add a new row
@@ -105,16 +105,16 @@ class Board:
         return self._values
 
     def fill_values_from_file(self, file):
-        """ 
+        """
         Fills a board with the information given by a file.
-        
+
         Parameters
         ----------
-        file: string
+        file : string
 
         Returns
         -------
-        values: List
+        values : List
         """
         for row in range(self._height):
             self.append([])
@@ -128,39 +128,38 @@ class Board:
         return self._values
 
     def load_from_file(self, file):
-        """ 
-        Loads a file.
+        """
+        Loads and returns a file.
 
         Parameters
         ----------
-        file: string
+        file : string
 
         Returns
         -------
-        f: File
+        f : File
         """
         f = open(file, 'r').read().split()
         return f
 
     def change_pos_value(self, row, column, value):
-        """ 
+        """
         Changes the value of the given cell with another value.
-        
+
         Parameters
         ----------
-        row: int
-        column: int
-        value: int
+        cell : Cell
+        value : int
         """
         self._values[row][column] = value
 
     def next_board_state(self):
-        """ 
+        """
         Calculates and returns a new board with updated values. 
 
         Returns
         -------
-        new_board: Board
+        new_board : Board
         """
         if not self.is_empty():
             new_board = Board(self._width, self._height)
@@ -189,140 +188,37 @@ class Board:
 
     def count_neighbors(self, row, column):
         """
-        Counts the amount of neighbors of a given cell
+        Counts the amount of neighbors of a given cell.
 
         Parameters
         ----------
-        row: int
-        column: int
+        cell : Cell
 
         Returns
         -------
-        values: int
+        n_live_neighbors : int
         """
-        # variable we'll be adding to
-        values = 0
+        # count variable
+        n_live_neighbors = 0
 
-        # check for rows
-        first_row = row == 0
-        in_between_rows = row > 0 and row < self._height - 1
-        last_row = row == self._height - 1
+        # iterate around the cells neighbors
+        for x in range((row - 1), (row + 1) + 1):
+            # skip if went off the edge of the board
+            if x < 0 or x >= self._height: continue
 
-        # check for columns
-        first_column = column == 0
-        in_between_columns = column > 0 and column < self._width - 1
-        last_column = column == self._width - 1
+            for y in range((column - 1), (column + 1) + 1):
+                # skip if went off the edge of the board
+                if y < 0 or y >= self._width: continue
+                # make sure we don't count the cell as a neighbor of itself
+                if x == row and y == column: continue
 
-        if first_column:
-            # first element of each row
-            if first_row:
-                # calculate 3 corners
-                if self._values[row][column + 1] == 1:       # right
-                    values += 1
-                if self._values[row + 1][column] == 1:       # down
-                    values += 1
-                if self._values[row + 1][column + 1] == 1:   # down right
-                    values += 1
-            elif in_between_rows:
-                # calculate 5 corners
-                if self._values[row - 1][column] == 1:       # up
-                    values += 1
-                if self._values[row - 1][column + 1] == 1:   # up right
-                    values += 1
-                if self._values[row][column + 1] == 1:       # right
-                    values += 1
-                if self._values[row + 1][column + 1] == 1:   # down right
-                    values += 1
-                if self._values[row + 1][column] == 1:       # down
-                    values += 1
-            else:
-                # last row. calculate 3 corners
-                if self._values[row - 1][column] == 1:       # up
-                    values += 1
-                if self._values[row - 1][column + 1] == 1:   # up right
-                    values += 1
-                if self._values[row][column + 1] == 1:       # right
-                    values += 1
+                if self._values[x][y] == ALIVE_CELL:
+                    n_live_neighbors += 1
 
-        if in_between_columns:
-            # calculate 5 corners
-            if first_row:
-                if self._values[row][column - 1] == 1:      # left
-                    values += 1
-                if self._values[row + 1][column - 1] == 1:  # down left
-                    values += 1
-                if self._values[row + 1][column] == 1:      # down
-                    values += 1
-                if self._values[row + 1][column + 1] == 1:  # down right
-                    values += 1
-                if self._values[row][column + 1] == 1:      # right
-                    values += 1
-            elif last_row:
-                if self._values[row][column - 1] == 1:      # left
-                    values += 1
-                if self._values[row - 1][column - 1] == 1:  # up left
-                    values += 1
-                if self._values[row - 1][column] == 1:      # up
-                    values += 1
-                if self._values[row - 1][column + 1] == 1:  # up right
-                    values += 1
-                if self._values[row][column + 1] == 1:      # right
-                    values += 1
+        return n_live_neighbors
 
-        if last_column:
-            # last element of each row
-            if first_row:
-                # calculate 3 corners
-                if self._values[row][column - 1] == 1:       # left
-                    values += 1
-                if self._values[row + 1][column - 1] == 1:   # down left
-                    values += 1
-                if self._values[row + 1][column] == 1:       # down
-                    values += 1
-            elif in_between_rows:
-                # calculate 5 corners
-                if self._values[row - 1][column] == 1:       # up
-                    values += 1
-                if self._values[row - 1][column - 1] == 1:   # up left
-                    values += 1
-                if self._values[row][column - 1] == 1:       # left
-                    values += 1
-                if self._values[row + 1][column - 1] == 1:   # down left
-                    values += 1
-                if self._values[row + 1][column] == 1:       # down
-                    values += 1
-            else:
-                # last row. calculate 3 corners
-                if self._values[row - 1][column] == 1:       # up
-                    values += 1
-                if self._values[row - 1][column - 1] == 1:   # up left
-                    values += 1
-                if self._values[row][column - 1] == 1:       # left
-                    values += 1
-        
-        if in_between_rows and in_between_columns:
-            # calculate all 8 corners
-            if self._values[row][column - 1] == 1:           # left
-                values += 1
-            if self._values[row][column + 1] == 1:           # right
-                values += 1
-            if self._values[row - 1][column] == 1:           # up
-                values += 1
-            if self._values[row + 1][column] == 1:           # down
-                values += 1
-            if self._values[row - 1][column - 1] == 1:       # up left
-                values += 1
-            if self._values[row - 1][column + 1] == 1:       # up right
-                values += 1
-            if self._values[row + 1][column - 1] == 1:       # down left
-                values += 1
-            if self._values[row + 1][column + 1] == 1:       # down right
-                values += 1
-
-        return values
-    
     def render(self):
-        """ 
+        """
         Renders a board to the terminal and adds borders.
         Prints every 1 as a symbol and every 0 as a blank space.
         """
@@ -330,7 +226,7 @@ class Board:
         assert not self.is_empty(), 'No elements'
 
         print('-' * (self._width + 2)) # top corners
-        
+
         for row in range(self._height):
             for column in range(self._width):
                 if column == 0: # left corners
@@ -372,10 +268,6 @@ class Board:
 
     def clear(self):
         self._values.clear()
-
-    def copy(self):
-        values = self._values.copy()
-        return values
 
     def __len__(self):
         return self._len
