@@ -2,11 +2,8 @@ from random import *
 import time
 import os
 
-# constants
-DEAD_CELL = 0
-ALIVE_CELL = 1
+# change this value to experiment with spawning
 SPAWNING_PROBABILITY = 0.85
-TIME_BETWEEN_FRAMES = 0.03
 
 # TODO: add error checking
 class Board:
@@ -30,7 +27,7 @@ class Board:
     # attributes
     __slots__ = ['_values', '_width', '_height', '_len']
 
-    def __init__(self, width = 0, height = 0, random = True, source = ''):
+    def __init__(self, source = '',  width = 0, height = 0, random = True):
         self._values = []
         self._len = 0
         if source != '':
@@ -153,70 +150,6 @@ class Board:
         """
         self._values[row][column] = value
 
-    def next_board_state(self):
-        """
-        Calculates and returns a new board with updated values. 
-
-        Returns
-        -------
-        new_board : Board
-        """
-        if not self.is_empty():
-            new_board = Board(self._width, self._height)
-            for row in range(self._height):
-                for column in range(self._width):
-                    # get the cell we're working on
-                    cell = self._values[row][column]
-                    # count its neighbors
-                    neighbors = self.count_neighbors(row, column)
-                    # check whether the cell is alive or not and update it
-                    if cell == ALIVE_CELL:
-                        if neighbors == 0 or neighbors == 1:
-                            cell = DEAD_CELL
-                        if neighbors == 2 or neighbors == 3:
-                            cell = ALIVE_CELL
-                        if neighbors > 3:
-                            cell = DEAD_CELL
-                    else:
-                        if neighbors == 3:
-                            cell = ALIVE_CELL
-
-                    # update pos of the new board
-                    new_board.change_pos_value(row, column, cell)
-
-        return new_board
-
-    def count_neighbors(self, row, column):
-        """
-        Counts the amount of neighbors of a given cell.
-
-        Parameters
-        ----------
-        cell : Cell
-
-        Returns
-        -------
-        n_live_neighbors : int
-        """
-        # count variable
-        n_live_neighbors = 0
-
-        # iterate around the cells neighbors
-        for x in range((row - 1), (row + 1) + 1):
-            # skip if went off the edge of the board
-            if x < 0 or x >= self._height: continue
-
-            for y in range((column - 1), (column + 1) + 1):
-                # skip if went off the edge of the board
-                if y < 0 or y >= self._width: continue
-                # make sure we don't count the cell as a neighbor of itself
-                if x == row and y == column: continue
-
-                if self._values[x][y] == ALIVE_CELL:
-                    n_live_neighbors += 1
-
-        return n_live_neighbors
-
     def render(self):
         """
         Renders a board to the terminal and adds borders.
@@ -225,32 +158,22 @@ class Board:
         # make sure there are elements in the board
         assert not self.is_empty(), 'No elements'
 
-        print('-' * (self._width + 2)) # top corners
+        # where the values will be appended to
+        lines = []
+
+        print('-' * (self._width + 1) * 2) # top corners
 
         for row in range(self._height):
+            # create a new line
+            line = ''
             for column in range(self._width):
-                if column == 0: # left corners
-                    print('|', end = '')
+                # add a char to the line depending on the cell
+                line += (u"\u2588" if self._values[row][column] == 1 else ' ') * 2
+            lines.append(line)
+        # jump row and display lines
+        print('\n'.join(lines))
 
-                # print a symbol if a cell is alive
-                print(u"\u2588" if self._values[row][column] == ALIVE_CELL else ' ', end = '')
-
-                if column == self._width - 1: # right corners
-                    print('|', end = '')
-            # jump row
-            print('\n', end = '')
-
-        print('-' * (self._width + 2)) # bottom corners
-
-    def update(self):
-        """
-        Updates a board every given number of seconds.
-        """
-        while True:
-            self.render()
-            self = self.next_board_state() # update board state
-            time.sleep(TIME_BETWEEN_FRAMES) # wait a bit to better visualize results
-            os.system('cls') # clear the screen before rendering again
+        print('-' * (self._width + 1) * 2) # bottom corners
 
     def append(self, value):
         self._values.append(value)
@@ -262,6 +185,13 @@ class Board:
     @property
     def height(self):
         return self._height
+
+    @property
+    def values(self):
+        return self._values
+
+    def value_at(self, x, y):
+        return self._values[x][y]
 
     def is_empty(self):
         return self._len == 0
