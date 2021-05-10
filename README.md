@@ -6,13 +6,13 @@ The project is entirely for learning purposes and it is based on [Robert Heaton'
 ## Use
 The script either loads a .txt file from a directory or generates an entire random board to have fun with.
 
-In `main.py`, change the `source` parameter with the file you'd want to use:
+In `main.py`, change the board parameter with the file you'd want to use:
 ```python
-board_from_file = Board(source = '..\pattern.txt')
+board_from_file = Board(r'..\pattern.txt')
 ```
 or make it entirely random:
 ```python
-random_board = Board(15, 20)
+random_board = Board(width = 15, height = 20)
 ```
 Then, specify the automata you'll want to use and set to update it (as of 10/05/21 only has two of them):
 ```python
