@@ -1,31 +1,47 @@
+import math
+
 class Vector2:
-            __slots__ = ['_x', '_y']
-            def __init__(self, x, y):
-                self._x = x
-                self._y = y
+    __slots__ = ['_x', '_y']
+    def __init__(self, x, y):
+        self._x = x
+        self._y = y
 
-            def rotate_right(self):
-                return Vector2(self._y, -self._x)
+    def rotate_right(self):
+        return Vector2(self.y, -self.x)
 
-            def rotate_left(self):
-                return Vector2(-self._y, self._x)
+    def rotate_left(self):
+        return Vector2(-self.y, self.x)
 
-            def distance(self, other):
-                return other - self
+    def distance(self, other):
+        return other - self
 
-            @property
-            def x(self):
-                return self._x
+    def normalize(self):
+        pow_x = pow(self.x, 2)
+        pow_y = pow(self.y, 2)
+        return int(math.sqrt(pow_x + pow_y))
 
-            @property
-            def y(self):
-                return self._y
+    def to_unit_vector(self):
+        return self // self.normalize()
 
-            def __add__(self, other):
-                return Vector2(self.x + other.x, self.y + other.y)
+    @property
+    def x(self):
+        return self._x
 
-            def __sub__(self, other):
-                return Vector2(self.x - other.x, self.y - other.y)
+    @property
+    def y(self):
+        return self._y
 
-            def __repr__(self):
-                return repr((self._x, self._y))
+    def copy(self):
+        return Vector2(self.x, self.y)
+
+    def __add__(self, other):
+        return Vector2(self.x + other.x, self.y + other.y)
+
+    def __sub__(self, other):
+        return Vector2(self.x - other.x, self.y - other.y)
+
+    def __floordiv__(self, other):
+        return Vector2(self.x // other, self.y // other)
+
+    def __repr__(self):
+        return repr((self._x, self._y))

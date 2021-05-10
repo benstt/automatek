@@ -27,6 +27,7 @@ class Board:
     # attributes
     __slots__ = ['_values', '_width', '_height', '_len']
 
+
     def __init__(self, source = '',  width = 0, height = 0, random = True):
         self._values = []
         self._len = 0
@@ -157,23 +158,28 @@ class Board:
         """
         # make sure there are elements in the board
         assert not self.is_empty(), 'No elements'
-
-        # where the values will be appended to
+        # where the lines will be appended to
         lines = []
 
-        print('-' * (self._width + 1) * 2) # top corners
+        display_as = {
+            0: ' ',           # dead cell
+            1: u"\u2588"      # alive cell
+        }
+
+        print('-' * (self._width) * 2) # top corners
 
         for row in range(self._height):
             # create a new line
             line = ''
             for column in range(self._width):
                 # add a char to the line depending on the cell
-                line += (u"\u2588" if self._values[row][column] == 1 else ' ') * 2
+                val = self._values[row][column]
+                line += (display_as[val]) * 2
             lines.append(line)
         # jump row and display lines
         print('\n'.join(lines))
 
-        print('-' * (self._width + 1) * 2) # bottom corners
+        print('-' * (self._width) * 2) # bottom corners
 
     def append(self, value):
         self._values.append(value)

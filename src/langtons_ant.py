@@ -10,62 +10,84 @@ class LangtonAnt(CellularAutomata):
     Each new state follows this rules:
         * At a white square, turn 90° clockwise, flip the color of the square, move forward one unit.
         * At a black square, turn 90° counter-clockwise, flip the color of the square, move forward one unit.
+
+    Attributes
+    ----------
+    ant : Ant
+        The ant that will move through the board.
     """
+
+    # class that will help to work with the ant
     @dataclass
     class _Ant:
         pos: 'Vector2' = None
+        facing_dir: 'Vector2' = None
 
-    __slots__ = ['_ant_pos', '_ant_facing_dir']
+    __slots__ = ['_ant']
 
     def __init__(self, board, ant_x, ant_y):
         super().__init__(board)
-        self._ant_pos = Vector2(ant_x, ant_y)
-        # set ant to face up.
-        # x is a row, so it's orders are inverted.
-        self._ant_facing_dir = Vector2(self.ant_pos.x - 1, self.ant_pos.y)
 
-    def determine_next_ant_position(self):
-        cur_x = self.ant_pos.x
-        cur_y = self.ant_pos.y
-        ant_facing_pos = self.ant_facing_dir
-        next_desired_position = ant_facing_pos.rotate_right() if self.board.value_at(cur_x, cur_y) == 1 else ant_facing_pos.rotate_left()
+        # set position of the ant
+        pos = Vector2(ant_x, ant_y)
+        # set ant to face a direction based on board value under it
+        facing_dir = Vector2(0, 1) # right -- orders are inverted as x means rows and y means columns
 
-        #return next_desired_position
-        return ant_facing_pos.rotate_right()
+        # set ant
+        self._ant = LangtonAnt._Ant(pos, facing_dir)
 
-    def move_ant(self):
-        self.ant_pos = self.determine_next_ant_position()
-        return self.ant_pos
+    def determine_next_ant_direction(self):
+        """
+        Determines the next ant direction based on the current cell it's standing on.
+        Turns right if it's standing on a square, and left if not.
+
+        Returns
+        -------
+        ant_facing_pos : Vector2
+            A unit vector.
+        """
+        cur_x = self.ant.pos.x
+        cur_y = self.ant.pos.y
+        # determine in which direction to move
+        move_dir = self.ant.facing_dir
+
+        # get desired position based on cell under ant
+        if self.board.value_at(cur_x, cur_y) == self.ALIVE_CELL:
+            # rotate right
+            ant_facing_pos = move_dir.rotate_right()
+        else:
+            # rotate left
+            ant_facing_pos = move_dir.rotate_left()
+
+        return ant_facing_pos
+
+    def move_ant(self, m_dir):
+        """
+        Moves the ant one unit towards the facing direction.
+
+        Parameters
+        ----------
+        m_dir : Vector2
+            The direction (a unit vector) desired to move the ant
+        """
+        # update position
+        self.ant.pos += m_dir
+
+        return self.ant.pos
 
     def set_next_state(self):
+        """
+        Set next state of the board.
+        Moves the ant depending on the cell it's standing on and flips the color of the cell.
+        """
         if not self.board.is_empty():
-            pass
+            pos = self.ant.pos
+            self.ant.facing_dir = self.determine_next_ant_direction()
+            self.ant.pos = self.move_ant(self.ant.facing_dir)
+            self.board.values[pos.x][pos.y] = int(not self.board.values[pos.x][pos.y])
+
+        return self.board
 
     @property
-    def ant_pos(self):
-        return self._ant_pos
-
-    @ant_pos.setter
-    def ant_pos(self, new):
-        self._ant_pos = new
-
-    @property
-    def ant_facing_dir(self):
-        return self._ant_facing_dir
-
-    @ant_facing_dir.setter
-    def ant_facing_dir(self, new):
-        self._ant_facing_dir = new
-
-    @property
-    def ant_next_pos(self):
-        return LangtonAnt._Ant.next_pos
-        
-
-#ant_pos = Vector2(1, 1)
-#facing_pos = Vector2(0, 1)
-#desired_pos = ant_pos.distance(facing_pos).rotate_right()
-#print(desired_pos)
-#ant = LangtonAnt._Ant(ant_pos, facing_pos) # creo una ant
-#d = ant.determine_next_position(ant.pos.distance(facing_pos)) # determino donde tendria que moverse. tendria que dar (0, 1)
-#print(d)
+    def ant(self):
+        return self._ant

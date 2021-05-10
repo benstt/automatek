@@ -1,9 +1,6 @@
 from board import Board
 from life_like_automata import LifeLike
 
-#DEAD_CELL = 0
-#ALIVE_CELL = 1
-
 class GameOfLife(LifeLike):
     """
     Conway's Game of Life automata.
