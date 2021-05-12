@@ -1,9 +1,17 @@
 from random import *
 import time
 import os
+import math
 
 # change this value to experiment with spawning
-SPAWNING_PROBABILITY = 0.85
+ONE_SPAWNING_PROBABILITY = 0.85
+TWO_SPAWNING_PROBABILITY = 1.75
+
+probs = {
+    0: 0.60,
+    1: 0.25,
+    2: 0.15
+}
 
 # TODO: add error checking
 class Board:
@@ -25,17 +33,19 @@ class Board:
         Total number of values.
     """
     # attributes
-    __slots__ = ['_values', '_width', '_height', '_len']
+    __slots__ = ['_values', '_width', '_height', '_len', '_range', '_file_loaded']
 
-
-    def __init__(self, source = '',  width = 0, height = 0, random = True):
+    def __init__(self, source = '',  width = 0, height = 0, random = True, n_range = 1):
         self._values = []
         self._len = 0
+        self._range = n_range
+        self._file_loaded = False
         if source != '':
             # load information from file
             file = self.load_from_file(source)
             self._width = len(file[0])
             self._height = len(file)
+            self._file_loaded = True
             self.fill_values_from_file(file)
         else:
             # create a board filled with values
@@ -43,7 +53,7 @@ class Board:
             self._height = height
             if width > 0 and height > 0:
                 if random:
-                    self.fill_values_randomly()
+                    self.fill_values_randomly(n_range)
                 else:
                     self.fill_values(0)
 
@@ -79,7 +89,7 @@ class Board:
 
         return self._values
 
-    def fill_values_randomly(self):
+    def fill_values_randomly(self, n_range):
         """
         Fills a board with either a 0 or a 1.
 
@@ -92,8 +102,19 @@ class Board:
             self.append([])
             for column in range(self._width):
                 # assign random values to every number and append that to the row
-                rand_number = random()
-                rand_number = 1 if rand_number >= SPAWNING_PROBABILITY else 0
+                rand_number = uniform(0, n_range)
+                if rand_number > ONE_SPAWNING_PROBABILITY and rand_number < 1:
+                    rand_number = 1
+                elif rand_number >= TWO_SPAWNING_PROBABILITY:
+                    rand_number = 2
+                else:
+                    rand_number = 0
+                # experimental
+                # ceil = math.ceil(rand_number)
+                # if rand_number > ceil - (0.25 - ((ceil - 1) * (0.25 / ceil))):
+                #     rand_number = ceil
+                # else:
+                #     rand_number = 0
                 self._values[row].append(rand_number)
                 self._len += 1
 
@@ -151,36 +172,6 @@ class Board:
         """
         self._values[row][column] = value
 
-    def render(self):
-        """
-        Renders a board to the terminal and adds borders.
-        Prints every 1 as a symbol and every 0 as a blank space.
-        """
-        # make sure there are elements in the board
-        assert not self.is_empty(), 'No elements'
-        # where the lines will be appended to
-        lines = []
-
-        display_as = {
-            0: ' ',           # dead cell
-            1: u"\u2588"      # alive cell
-        }
-
-        print('-' * (self._width) * 2) # top corners
-
-        for row in range(self._height):
-            # create a new line
-            line = ''
-            for column in range(self._width):
-                # add a char to the line depending on the cell
-                val = self._values[row][column]
-                line += (display_as[val]) * 2
-            lines.append(line)
-        # jump row and display lines
-        print('\n'.join(lines))
-
-        print('-' * (self._width) * 2) # bottom corners
-
     def append(self, value):
         self._values.append(value)
 
@@ -198,6 +189,13 @@ class Board:
 
     def value_at(self, x, y):
         return self._values[x][y]
+
+    @property
+    def range(self):
+        return self._range
+
+    def loaded_from_file(self):
+        return self._file_loaded == True
 
     def is_empty(self):
         return self._len == 0

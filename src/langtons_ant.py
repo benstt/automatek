@@ -25,11 +25,11 @@ class LangtonAnt(CellularAutomata):
 
     __slots__ = ['_ant']
 
-    def __init__(self, board, ant_x, ant_y):
+    def __init__(self, board):
         super().__init__(board)
 
         # set position of the ant
-        pos = Vector2(ant_x, ant_y)
+        pos = Vector2(self.board.height // 2, self.board.width // 2)
         # set ant to face a direction based on board value under it
         facing_dir = Vector2(0, 1) # right -- orders are inverted as x means rows and y means columns
 
@@ -82,9 +82,9 @@ class LangtonAnt(CellularAutomata):
         """
         if not self.board.is_empty():
             pos = self.ant.pos
-            self.ant.facing_dir = self.determine_next_ant_direction()
-            self.ant.pos = self.move_ant(self.ant.facing_dir)
-            self.board.values[pos.x][pos.y] = int(not self.board.values[pos.x][pos.y])
+            self.ant.facing_dir = self.determine_next_ant_direction() # calculate which way to go
+            self.ant.pos = self.move_ant(self.ant.facing_dir) # update position
+            self.board.values[pos.x][pos.y] = int(not self.board.values[pos.x][pos.y]) # flip cell the ant's standing on
 
         return self.board
 

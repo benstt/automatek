@@ -1,7 +1,6 @@
 from abc import ABC, abstractmethod
 from board import Board
 import time
-import os
 
 class CellularAutomata(ABC):
     """
@@ -29,11 +28,13 @@ class CellularAutomata(ABC):
         pass
 
     def update(self, seconds):
-        while True:
-            self._board.render()
-            self.board = self.set_next_state() # update board state
-            time.sleep(seconds) # wait a bit to better visualize results
-            os.system('cls') # clear the screen before rendering again
+        """
+        Updates the board any given number of seconds.
+        """
+        self.board = self.set_next_state() # update board state
+        time.sleep(seconds) # wait a bit to better visualize results
+
+        return self.board
 
     @property
     def board(self):

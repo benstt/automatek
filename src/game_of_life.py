@@ -12,6 +12,8 @@ class GameOfLife(LifeLike):
     """
     def __init__(self, board):
         super().__init__(board)
+        
+        assert self.board.range == 1, "Illegal number of states possible."
 
     def set_next_state(self):
         """
