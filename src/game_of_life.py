@@ -16,6 +16,14 @@ class GameOfLife(LifeLike):
         assert self.board.range == 1, "Illegal number of states possible."
 
     def determine_next_cell_state(self, cell, neighbors):
+        """
+        Process the logic necesarry to update a given cell of the automata.
+
+        Returns
+        -------
+        cell : int
+            A number that represents the state of a cell, either a 0 or a 1.
+        """
         if cell == self.ALIVE_CELL:
             if neighbors == 0 or neighbors == 1 or neighbors > 3:
                 cell = self.DEAD_CELL

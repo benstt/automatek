@@ -167,7 +167,8 @@ class Board:
 
         Parameters
         ----------
-        cell : Cell
+        row : int
+        column : int
         value : int
         """
         self._values[row][column] = value

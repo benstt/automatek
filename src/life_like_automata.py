@@ -17,6 +17,14 @@ class LifeLike(CellularAutomata, ABC):
 
     @abstractmethod
     def determine_next_cell_state(self, cell, neighbors):
+        """
+        Process the logic necesarry to update a given cell of the automata.
+        
+        Returns
+        -------
+        cell : int
+            A number that represents the state of a cell.
+        """
         pass
 
     def set_next_state(self):

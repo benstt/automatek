@@ -1,6 +1,9 @@
 import math
 
 class Vector2:
+    """
+    Class that represents a 2D mathematical vector.
+    """
     __slots__ = ['_x', '_y']
     def __init__(self, x, y):
         self._x = x
@@ -42,6 +45,9 @@ class Vector2:
 
     def __floordiv__(self, other):
         return Vector2(self.x // other, self.y // other)
+
+    def __eq__(self, other):
+        return self.x is other.x and self.y is other.y
 
     def __repr__(self):
         return repr((self._x, self._y))

@@ -37,9 +37,15 @@ class CellularAutomata(ABC):
         return self.board
 
     def cell_at(self, row, column):
+        """
+        Returns a value at the given row and column.
+        """
         return self.board.values[row][column]
 
     def set_cell(self, row, column, new):
+        """
+        Changes a cell's value with a new one.
+        """
         self.board.values[row][column] = new
 
     @property
