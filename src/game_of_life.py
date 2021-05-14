@@ -15,35 +15,12 @@ class GameOfLife(LifeLike):
         
         assert self.board.range == 1, "Illegal number of states possible."
 
-    def set_next_state(self):
-        """
-        Calculates and returns a new board with updated values. 
+    def determine_next_cell_state(self, cell, neighbors):
+        if cell == self.ALIVE_CELL:
+            if neighbors == 0 or neighbors == 1 or neighbors > 3:
+                cell = self.DEAD_CELL
+        else:
+            if neighbors == 3:
+                cell = self.ALIVE_CELL
 
-        Returns
-        -------
-        new_board : Board
-        """
-        if not self.board.is_empty():
-            new_board = Board(width = self.board.width, height = self.board.height)
-            for row in range(self.board.height):
-                for column in range(self.board.width):
-                    # get the cell we're working on
-                    cell = self.board.values[row][column]
-                    # count its neighbors
-                    neighbors = self.count_neighbors(row, column)
-                    # check whether the cell is alive or not and update it
-                    if cell == self.ALIVE_CELL:
-                        if neighbors == 0 or neighbors == 1:
-                            cell = self.DEAD_CELL
-                        if neighbors == 2 or neighbors == 3:
-                            cell = self.ALIVE_CELL
-                        if neighbors > 3:
-                            cell = self.DEAD_CELL
-                    else:
-                        if neighbors == 3:
-                            cell = self.ALIVE_CELL
-
-                    # update pos of the new board
-                    new_board.change_pos_value(row, column, cell)
-
-        return new_board
+        return cell

@@ -1,4 +1,3 @@
-from board import Board
 from vec2 import Vector2
 from cellular_automata import CellularAutomata
 from dataclasses import dataclass
@@ -28,12 +27,12 @@ class LangtonAnt(CellularAutomata):
     def __init__(self, board):
         super().__init__(board)
 
-        # set position of the ant
+        # set position of the ant at the middle of the board
         pos = Vector2(self.board.height // 2, self.board.width // 2)
-        # set ant to face a direction based on board value under it
+        # set ant to face an arbitrary direction
         facing_dir = Vector2(0, 1) # right -- orders are inverted as x means rows and y means columns
 
-        # set ant
+        # instance ant
         self._ant = LangtonAnt._Ant(pos, facing_dir)
 
     def determine_next_ant_direction(self):
@@ -43,7 +42,7 @@ class LangtonAnt(CellularAutomata):
 
         Returns
         -------
-        ant_facing_pos : Vector2
+        ant_facing_dir : Vector2
             A unit vector.
         """
         cur_x = self.ant.pos.x
@@ -52,14 +51,14 @@ class LangtonAnt(CellularAutomata):
         move_dir = self.ant.facing_dir
 
         # get desired position based on cell under ant
-        if self.board.value_at(cur_x, cur_y) == self.ALIVE_CELL:
+        if self.cell_at(cur_x, cur_y) == self.ALIVE_CELL:
             # rotate right
-            ant_facing_pos = move_dir.rotate_right()
+            ant_facing_dir = move_dir.rotate_right()
         else:
             # rotate left
-            ant_facing_pos = move_dir.rotate_left()
+            ant_facing_dir = move_dir.rotate_left()
 
-        return ant_facing_pos
+        return ant_facing_dir
 
     def move_ant(self, m_dir):
         """
@@ -75,16 +74,25 @@ class LangtonAnt(CellularAutomata):
 
         return self.ant.pos
 
+    def invert_cell(self, row, column):
+        return int(not self.cell_at(row, column))
+
     def set_next_state(self):
         """
         Set next state of the board.
         Moves the ant depending on the cell it's standing on and flips the color of the cell.
         """
         if not self.board.is_empty():
-            pos = self.ant.pos
-            self.ant.facing_dir = self.determine_next_ant_direction() # calculate which way to go
-            self.ant.pos = self.move_ant(self.ant.facing_dir) # update position
-            self.board.values[pos.x][pos.y] = int(not self.board.values[pos.x][pos.y]) # flip cell the ant's standing on
+            ant_pos = self.ant.pos
+            # calculate which way to go
+            self.ant.facing_dir = self.determine_next_ant_direction()
+            # update position
+            self.ant.pos = self.move_ant(self.ant.facing_dir)
+            # invert the cell the ant were standing on
+            cell = self.invert_cell(ant_pos.x, ant_pos.y)
+
+            # update the board
+            self.board.change_pos_value(ant_pos.x, ant_pos.y, cell)
 
         return self.board
 

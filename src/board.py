@@ -187,9 +187,6 @@ class Board:
     def values(self):
         return self._values
 
-    def value_at(self, x, y):
-        return self._values[x][y]
-
     @property
     def range(self):
         return self._range

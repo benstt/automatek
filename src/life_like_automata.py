@@ -1,4 +1,5 @@
 from abc import ABC, abstractmethod
+from board import Board
 from cellular_automata import CellularAutomata
 
 class LifeLike(CellularAutomata, ABC):
@@ -15,11 +16,35 @@ class LifeLike(CellularAutomata, ABC):
         super().__init__(board)
 
     @abstractmethod
+    def determine_next_cell_state(self, cell, neighbors):
+        pass
+
     def set_next_state(self):
         """
-        Calculates and returns the new state of the automata. 
+        Calculates and returns a new board with updated values. 
+
+        Returns
+        -------
+        new_board : Board
         """
-        pass
+        if not self.board.is_empty():
+            n_board_rows = self.board.height
+            n_board_cols = self.board.width
+            new_board = Board(width = n_board_cols, height = n_board_rows)
+
+            for row in range(n_board_rows):
+                for column in range(n_board_cols):
+                    # get the cell we're working on and count its neighbors
+                    cell = self.cell_at(row, column)
+                    neighbors = self.count_neighbors(row, column)
+
+                    # update the cell based on given rules
+                    cell = self.determine_next_cell_state(cell, neighbors)
+
+                    # update pos of the new board
+                    new_board.change_pos_value(row, column, cell)
+
+        return new_board
 
     def count_neighbors(self, row, column):
         """
