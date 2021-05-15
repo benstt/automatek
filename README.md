@@ -11,9 +11,9 @@ Run the code on the terminal by using
 $ python main.py
 ```
 ### Controls
-In menus, move between rows with up/down arrow keys. Press the enter key to interact.
+In menus, move between rows with `up/down` arrow keys. Press the `enter` key to interact.
 
-In display mode (when the automata is running) press the same arrow keys to adjust the velocity of the visualizor. Press enter to go back to menus.
+In display mode (when the automata is running) press the same `arrow keys` to adjust the velocity of the visualizor. Press `enter` to go back to menus.
 
 Keep in mind that the project is still in development, so expect some bugs. Also, the 'Make your own automata' option is not implemented yet.
 
