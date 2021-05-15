@@ -1,30 +1,21 @@
-# Cellular Automatas
-Different cellular automatas implementation in Python that runs on the terminal.
+# Automatek
+Cellular Automata visualizator that runs on the terminal.
 
 The project is entirely for learning purposes and it is based on [Robert Heaton's Game of Life article](https://robertheaton.com/2018/07/20/project-2-game-of-life/).
 
+![automatek preview](https://www.youtube.com/watch?v=32Z3BunQOD4)
+
+
 ## Use
-The script either loads a .txt file from a directory or generates an entire random board to have fun with.
-
-In `main.py`, change the board parameter with the file you'd want to use:
-```python
-board_from_file = Board(r'..\pattern.txt')
-```
-or make it entirely random:
-```python
-random_board = Board(width = 15, height = 20)
-```
-Then, specify the automata you'll want to use and set to update it (as of 10/05/21 only has two of them):
-```python
-langton = LangtonAnt(board, ant_x, ant_y)
-langton.update(time_between_frames)
-```
-
-Lastly, run the code on the terminal by using
+Run the code on the terminal by using
 ```
 $ python main.py
 ```
+### Controls
+In menus, move between rows with up/down arrow keys. Press the enter key to interact.
 
-Keep in mind that the .txt file has to be kind of a _binary_ matrix, just as in the ones in the samples folder.
+In display mode (when the automata is running) press the same arrow keys to adjust the velocity of the visualizor. Press enter to go back to menus.
+
+Keep in mind that the project is still in development, so expect some bugs. Also, the 'Make your own automata' option is not implemented yet.
 
 Enjoy!
