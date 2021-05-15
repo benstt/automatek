@@ -26,6 +26,12 @@ class Vector2:
     def to_unit_vector(self):
         return self // self.normalize()
 
+    def rotate_randomly(self):
+        from random import randrange
+        rand_direction = randrange(0, 2)
+
+        return self * rand_direction
+
     @property
     def x(self):
         return self._x
@@ -43,8 +49,14 @@ class Vector2:
     def __sub__(self, other):
         return Vector2(self.x - other.x, self.y - other.y)
 
+    def __mul__(self, other):
+        return Vector2(self.x * other, self.y * other)
+
     def __floordiv__(self, other):
         return Vector2(self.x // other, self.y // other)
+
+    def __neg__(self):
+        return Vector2(-self.x, -self.y)
 
     def __eq__(self, other):
         return self.x is other.x and self.y is other.y

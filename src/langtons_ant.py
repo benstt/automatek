@@ -60,9 +60,16 @@ class LangtonAnt(CellularAutomata):
 
         return ant_facing_dir
 
+    def is_out_of_bound(self, pos):
+        """
+        Checks if the ant went out of the board's sizes.
+        """
+        return pos.x > self.board.width - 1 or pos.x < 0 or pos.y > self.board.height - 1 or pos.y < 0
+
     def move_ant(self, m_dir):
         """
         Moves the ant one unit towards the facing direction.
+        If it gets out of the board, fixes the movement to turn randomly.
 
         Parameters
         ----------
@@ -70,11 +77,18 @@ class LangtonAnt(CellularAutomata):
             The direction (a unit vector) desired to move the ant
         """
         # update position
-        self.ant.pos += m_dir
+        new_ant_pos = self.ant.pos + m_dir
 
-        return self.ant.pos
+        # fix the ant if it went out of bound
+        if self.is_out_of_bound(new_ant_pos):
+            return self.ant.pos - m_dir.rotate_randomly()
+
+        return new_ant_pos
 
     def invert_cell(self, row, column):
+        """
+        Inverts the value of a cell.
+        """
         return int(not self.cell_at(row, column))
 
     def set_next_state(self):

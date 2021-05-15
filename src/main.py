@@ -309,13 +309,11 @@ def main(stdscr):
                         board = Board(height = SCREEN_HEIGHT, width = SCREEN_WIDTH // 3, n_range = board_range, random = False)
                         current_loop_state = 'display_automata_state'
 
-                    # if not selecting 'back' option
                     elif current_row_idx != 0 and current_row_idx != back_option:
                         # load the board selected
                         board = load_board(current_row_idx, selected_automata_idx) 
                         current_loop_state = 'display_automata_state'
 
-                    # selecting 'back' option
                     elif current_row_idx == back_option:
                         current_menu_state = 'choose_automata_menu'
 
@@ -406,6 +404,7 @@ def main(stdscr):
                 print_board(stdscr, board, y, x)
                 print_controls(stdscr, SCREEN_HEIGHT - 2, SCREEN_WIDTH // 2)
                 if selected_randomly:
+                    # get the names to display
                     current_automata_name = automatas[selected_automata_idx]
                     current_board_name = boards_display[board_idx]
 
